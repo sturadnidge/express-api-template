@@ -50,7 +50,7 @@ app.use('/users', users);
 // routes
 app.route('/')
   .get(
-    function (req, res, next) {
+    function (req, res) {
       var data = {};
 
       req.authenticated ?
@@ -62,7 +62,7 @@ app.route('/')
 
 // catch all handler
 app.route('*')
-  .all(function(req, res, next) {
+  .all(function(req, res) {
     var data = {};
 
     data.message = 'nope. nothing. nada. zip. zilch.';

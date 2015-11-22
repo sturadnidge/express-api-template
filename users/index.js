@@ -21,7 +21,7 @@ app.param('user', function(req, res, next) {
 
 app.route('/')
   .get(
-    function(req, res, next) {
+    function(req, res) {
       var data = {};
 
       data.message = 'nuh-uh-uh!';
@@ -42,5 +42,5 @@ app.route('/:user')
 
 app.route('/:user/email')
   .get(users.get.email);
-  
+
 module.exports = app;
