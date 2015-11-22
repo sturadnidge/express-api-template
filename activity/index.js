@@ -11,7 +11,7 @@ app.param('record', function(req, res, next) {
   var data = {};
   data.message = 'invalid activity id';
 
-  validate.uuid(req.params.id) ?
+  validate.uuid(req.params.record) ?
     next() :
     res.status(400).json(data);
 });
