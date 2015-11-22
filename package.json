@@ -1,12 +1,12 @@
 {
   "name": "express-api-template",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "author": "Stu Radnidge <sturadnidge@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/sturadnidge/express-api-template/issues"
   },
-  "homepage":"https://github.com/sturadnidge/express-api-template",
+  "homepage": "https://github.com/sturadnidge/express-api-template",
   "repository": {
     "type": "git",
     "url": "git://github.com/sturadnidge/express-api-template.git"
