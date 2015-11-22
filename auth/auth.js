@@ -30,9 +30,11 @@ module.exports = {
 
         res.set(req.app.get('authHeader'), jot);
         // send a cookie
-        //res.cookie(req.app.get('authHeader'), jot, {
-        //  maxAge: new Date(Date.now() + 7884000), // 3 months
-        //  httpOnly: true }
+        //res.cookie(
+        //  req.app.get('authHeader'),
+        //  jot,
+        //  { maxAge: new Date(Date.now() + 7884000), // 3 months
+        //    httpOnly: true}
         //);
 
         data.message = 'logged in as user: ' + user.id;
