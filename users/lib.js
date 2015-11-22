@@ -12,11 +12,14 @@ module.exports = {
 
     var hashed = encryptor(token);
 
+    // lookup on primary token
     db.findOne('users', {auth: {token: hashed}}, function(err, user) {
       if (err) return callback(err, null);
       if (user) {
         callback(null, user);
       } else {
+        // we might not find a primary token for a couple of reasons...
+        // could be a new user, or an existing user logging in again
         db.findOne('users', {auth: {pending: hashed}}, function(err, user_) {
           if (err) return callback(err, null);
           if (user_) {
