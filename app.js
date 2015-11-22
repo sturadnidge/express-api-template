@@ -16,7 +16,7 @@ var app = express();
 
 // globals
 app.set('jwtSecret', process.env.JWT_SECRET || 'sshhh - it\'s a secret!');
-app.set('authHeader', 'x-auth-token');
+app.set('authHeader', 'X-Auth-Token');
 app.set('json spaces', 2);
 
 // express variables
@@ -27,6 +27,7 @@ app.disable('x-powered-by');
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(mw.checkAuthToken);
+app.use(mw.allowCors);
 
 // custom powered by
 app.use(function(req, res, next) {
