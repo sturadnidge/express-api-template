@@ -21,19 +21,17 @@ app.set('json spaces', 2);
 
 // express variables
 app.enable('trust proxy');
-app.disable('x-powered-by');
-
+// custom powered by
+app.use(function(req, res, next) {
+  res.setHeader('X-Powered-By','something something something dark side');
+  next();
+});
 // middleware
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(mw.checkAuthToken);
 app.use(mw.allowCors);
 
-// custom powered by
-app.use(function(req, res, next) {
-  res.setHeader('X-Powered-By','something something something dark side');
-  next();
-});
 
 // environments
 if (app.get('env') === 'production') {
