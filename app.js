@@ -26,12 +26,12 @@ app.use(function(req, res, next) {
   res.setHeader('X-Powered-By','something something something dark side');
   next();
 });
+
 // middleware
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(mw.checkAuthToken);
 app.use(mw.allowCors);
-
 
 // environments
 if (app.get('env') === 'production') {
