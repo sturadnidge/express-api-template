@@ -31,7 +31,7 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(mw.checkAuthToken);
-app.use(mw.allowCors);
+//app.use(mw.allowCors);
 
 // environments
 if (app.get('env') === 'production') {
