@@ -28,7 +28,7 @@ module.exports = {
           return res.status(404).json(data);
         }
 
-        // only allow admins to profile owner to delete
+        // only allow admins or profile owner to delete
         if (lib.isAdmin(req.user) || req.user.id === user.id) {
           userLib.deleteUser(user, function(err) {
             if (err) {
