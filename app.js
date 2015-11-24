@@ -15,6 +15,7 @@ var bodyParser = require('body-parser'),
 var app = express();
 
 // globals
+app.set('port', process.env.NODE_PORT || 3000);
 app.set('jwtSecret', process.env.JWT_SECRET || 'sshhh - it\'s a secret!');
 app.set('authHeader', 'X-Auth-Token');
 app.set('json spaces', 2);
@@ -32,13 +33,6 @@ app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(mw.checkAuthToken);
 //app.use(mw.allowCors);
-
-// environments
-if (app.get('env') === 'production') {
-  app.set('port', process.env.NODE_PORT);
-} else {
-  app.set('port', 3000);
-}
 
 // mounts
 app.use('/auth', auth);
