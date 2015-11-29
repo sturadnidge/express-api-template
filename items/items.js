@@ -18,7 +18,7 @@ module.exports = {
 
       itemLib.findItemById(id, function(err, item) {
         if (err) {
-          data.message = 'error looking up item';
+          data.message = 'error finding item';
           return res.status(500).json(data);
         }
 
@@ -91,7 +91,7 @@ module.exports = {
 
       itemLib.findItemById(id, function(err, item) {
         if (err) {
-          data.message = 'error looking up item';
+          data.message = 'error finding item';
           return res.status(500).json(data);
         }
 
@@ -161,9 +161,11 @@ module.exports = {
           id           = req.params.item,
           updatedItem  = req.body;
 
+      // unlike user updates, need to check item owner against requestor id,
+      // so need to find the item first.
       itemLib.findItemById(id, function(err, item) {
         if (err) {
-          data.message = 'error updating item';
+          data.message = 'error finding item';
           return res.status(500).json(data);
         }
 
