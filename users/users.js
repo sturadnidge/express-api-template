@@ -17,19 +17,21 @@ module.exports = {
       var data = {},
           id = req.params.user;
 
-      userLib.findUserById(id, function(err, user) {
-        if (err) {
-          data.message = 'error looking up user';
-          return res.status(500).json(data);
-        }
+      // only allow admins or profile owner to delete
+      // all DELETEs are authenticated so can do this up front
+      if (lib.isAdmin(req.user) || req.user.id === id) {
 
-        if (!user) {
-          data.message = 'user not found';
-          return res.status(404).json(data);
-        }
+        userLib.findUserById(id, function(err, user) {
+          if (err) {
+            data.message = 'error looking up user';
+            return res.status(500).json(data);
+          }
 
-        // only allow admins or profile owner to delete
-        if (lib.isAdmin(req.user) || req.user.id === user.id) {
+          if (!user) {
+            data.message = 'user not found';
+            return res.status(404).json(data);
+          }
+
           userLib.deleteUser(user, function(err) {
             if (err) {
               data.message = 'error deleting user';
@@ -52,11 +54,11 @@ module.exports = {
             data.message = 'user deleted';
             res.status(200).json(data);
           });
-        } else {
-          data.message = 'you are not authorised to do that';
-          res.status(403).json(data);
-        }
-      });
+        });
+      } else {
+        data.message = 'you are not authorised to do that';
+        res.status(403).json(data);
+      }
     }
 
   // end delete options
@@ -66,11 +68,15 @@ module.exports = {
 
     email: function(req, res) {
     // URI: /users/:user/email?verify=:token
-    // only accessed via an email sent as a result of a profile update,
-    // breaks idempotency all over the place!
-      var data = {};
+    // protected by middleware:
+    //   requireAuthentication
 
-      userLib.findUserById(req.params.user, function(err, user) {
+      // only accessed via an email sent as a result of a profile update,
+      // so has to be a GET even though it's not idempotent
+      var data = {},
+          id = req.params.user;
+
+      userLib.findUserById(id, function(err, user) {
         if (err) {
           data.message = 'error looking up user';
           return res.status(500).json(data);
@@ -87,7 +93,7 @@ module.exports = {
         }
 
         // updates only apply to users own profile
-        if (req.authenticated && (req.user.id === user.id)) {
+        if (req.user.id === user.id) {
           if (lib.checkExists(user.email.verify)) {
             if (lib.checkEquals(req.query.verify, user.email.verify)) {
               // update email
@@ -107,7 +113,8 @@ module.exports = {
             }
           }
           // if we got here, the verify token was invalid or didn't exist
-          // send to user profile
+          // send to user profile, dont give up info as to what happened
+          // in case requestor is malicious
           res.redirect('..');
         } else {
           data.message = 'you are not authorised to do that';

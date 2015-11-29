@@ -41,6 +41,9 @@ app.route('/:user')
   );
 
 app.route('/:user/email')
-  .get(users.get.email);
+  .get(
+    mw.requireAuthentication,
+    users.get.email
+  );
 
 module.exports = app;
