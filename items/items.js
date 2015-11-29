@@ -28,7 +28,7 @@ module.exports = {
         }
 
         // only allow admins or item owner to delete
-        if (lib.isAdmin(req.user) || req.user.id === item.owner) {
+        if (lib.hasRole(req.user, 'admin') || req.user.id === item.owner) {
           itemLib.deleteItem(item, function(err) {
             if (err) {
               data.message = 'error deleting item';
@@ -101,7 +101,7 @@ module.exports = {
         }
 
         if (req.authenticated) {
-          if (lib.isAdmin(req.user) || req.user.id === item.owner) {
+          if (lib.hasRole(req.user, 'admin') || req.user.id === item.owner) {
             item.editable = true;
           }
         }
@@ -175,7 +175,7 @@ module.exports = {
         }
 
         // only allow admins and item owner to update item
-        if (lib.isAdmin(req.user) || req.user.id === item.owner) {
+        if (lib.hasRole(req.user, 'admin') || req.user.id === item.owner) {
           // users can only update item description
           if (!validate.item.description(updatedItem)) {
             data.message = 'invalid item update (description)';
@@ -184,7 +184,7 @@ module.exports = {
             item.description = updatedItem.description;
           }
           // admins can change ownership and enable / disable items
-          if (lib.isAdmin(req.user)) {
+          if (lib.hasRole(req.user, 'admin')) {
 
             if (!validate.item.enabled(updatedItem)) {
               data.message = 'invalid item update (enabled)';

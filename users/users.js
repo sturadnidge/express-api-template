@@ -19,7 +19,7 @@ module.exports = {
 
       // only allow admins or profile owner to delete
       // all DELETEs are authenticated so can do this up front
-      if (lib.isAdmin(req.user) || req.user.id === id) {
+      if (lib.hasRole(req.user, 'admin') || req.user.id === id) {
 
         userLib.findUserById(id, function(err, user) {
           if (err) {
@@ -237,7 +237,7 @@ module.exports = {
 
       // only allow admins and profile owner update profile
       // all POSTs are authenticated so can do this up front
-      if (lib.isAdmin(req.user) || req.user.id === id) {
+      if (lib.hasRole(req.user, 'admin') || req.user.id === id) {
 
         userLib.findUserById(id, function(err, user) {
           if (err) {
@@ -269,7 +269,7 @@ module.exports = {
             }
           }
           // only admins can change user roles and enable / disable users
-          if (lib.isAdmin(req.user)) {
+          if (lib.hasRole(req.user, 'admin')) {
 
             if (!validate.user.enabled(updatedUser)) {
               data.message = 'invalid user update (enabled)';
