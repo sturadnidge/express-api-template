@@ -228,14 +228,21 @@ module.exports = {
           id          = req.params.user,
           updatedUser = req.body;
 
-      userLib.findUserById(id, function(err, user) {
-        if (!user) {
-          data.message = 'user not found';
-          return res.status(404).json(data);
-        }
+      // only allow admins and profile owner update profile
+      // all POSTs are authenticated so can do this up front
+      if (lib.isAdmin(req.user) || req.user.id === id) {
 
-        // only allow admins and profile owner update profile
-        if (lib.isAdmin(req.user) || req.user.id === user.id) {
+        userLib.findUserById(id, function(err, user) {
+          if (err) {
+            data.message = 'error looking up user';
+            return res.status(500).json(data);
+          }
+
+          if (!user) {
+            data.message = 'user not found';
+            return res.status(404).json(data);
+          }
+
           // users can only update email address
           if (!validate.user.email(updatedUser)) {
             // invalid email address
@@ -313,11 +320,11 @@ module.exports = {
             }
 
           });
-        } else {
-          data.message = 'you are not authorised to do that';
-          res.status(403).json(data);
-        }
-      });
+        });
+      } else {
+        data.message = 'you are not authorised to do that';
+        res.status(403).json(data);
+      }
     }
 
   // end post options
