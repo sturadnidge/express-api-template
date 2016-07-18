@@ -1,14 +1,17 @@
 'use strict';
 
-var low = require('lowdb');
+var _   = require('lodash'),
+    low = require('lowdb');
 
 var db = low('data/activity-db.json');
+
+db.set('activity', []).value();
 
 module.exports = {
 
   find: function(collection, query, callback) {
 
-    var data = db(collection).where(query).value();
+    var data = db.get(collection).where(query).value();
 
     callback(null, data);
   },
@@ -23,7 +26,7 @@ module.exports = {
 
   findRecent: function(collection, callback) {
 
-    var data = db(collection)
+    var data = db.get(collection)
                .chain()
                .where({public: true})
                .sortBy('cat')
@@ -37,7 +40,7 @@ module.exports = {
 
   insert: function(collection, thing, callback) {
 
-    db(collection).push(thing);
+    db.get(collection).push(thing).value();
 
     var data = cloneFindOne(collection, {id: thing.id});
 
@@ -48,6 +51,7 @@ module.exports = {
 };
 
 // private
+
 function cloneFindOne(collection, query) {
-  return db(collection).find(query).cloneDeep().value();
+  return db.get(collection).find(query).cloneDeep().value();
 }

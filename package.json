@@ -15,11 +15,11 @@
     "start": "node app"
   },
   "dependencies": {
-    "body-parser": "1.x",
-    "express": "4.x",
-    "jsonwebtoken": "3.x",
-    "lodash": "2.x",
-    "lowdb": "0.10.x"
+    "body-parser": "^1",
+    "express": "^4",
+    "jsonwebtoken": "^7",
+    "lodash": "^4",
+    "lowdb": "0.13"
   },
   "devDependencies": {
     "chai": "*",
