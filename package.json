@@ -19,7 +19,9 @@
     "express": "^4",
     "jsonwebtoken": "^7",
     "lodash": "^4",
-    "lowdb": "0.13"
+    "lowdb": "0.13",
+    "uuid": "^1",
+    "validator": "^6"
   },
   "devDependencies": {
     "chai": "*",

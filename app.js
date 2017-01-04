@@ -1,22 +1,18 @@
 'use strict';
-// express-api-template
+/* jshint node: true, latedef: nofunc */
 
 // modules
 var bodyParser = require('body-parser'),
     express    = require('express'),
     http       = require('http'),
 // internal requires
-    activity   = require('./activity'),
-    auth       = require('./auth'),
-    items      = require('./items'),
-    mw         = require('./lib/middleware.js'),
-    users      = require('./users');
+    things      = require('./things'),
+    mw         = require('./lib/middleware.js');
 
 var app = express();
 
 // globals
-app.set('port', process.env.NODE_PORT || 3000);
-app.set('jwtSecret', process.env.JWT_SECRET || 'sshhh - it\'s a secret!');
+app.set('port', process.env.PORT || 3000);
 app.set('authHeader', 'X-Auth-Token');
 app.set('json spaces', 2);
 
@@ -29,16 +25,12 @@ app.use(function(req, res, next) {
 });
 
 // middleware
-app.use(bodyParser.json({ type: 'application/json' }));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(mw.checkAuthToken);
-//app.use(mw.allowCors);
+app.use(mw.checkToken);
 
 // mounts
-app.use('/auth', auth);
-app.use('/activity', activity);
-app.use('/items', items);
-app.use('/users', users);
+app.use('/things', things);
 
 // routes
 app.route('/')

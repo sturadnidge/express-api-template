@@ -1,17 +1,19 @@
 'use strict';
+/* jshint node: true, latedef: nofunc */
 
 var _   = require('lodash'),
     low = require('lowdb');
 
-var db = low('data/item-db.json');
+var db = low();
 
-db.set('items', []).value();
+// init
+db.defaults({ things: []}).value();
 
 module.exports = {
 
-  find: function(collection, query, callback) {
+  find: function(collection, callback) {
 
-    var data = db.get(collection).where(query).value();
+    var data = db.get(collection).filter({enabled: true}).value();
 
     callback(null, data);
   },
