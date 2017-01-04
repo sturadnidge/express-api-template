@@ -60,7 +60,7 @@ console.log(jot);
 If you saved that output in an environment variable `$JWT`, you could then curl requests into the API with `curl -H "X-Auth-Token: $JWT" ... ` (assuming you have configured the app to look for tokens in the `X-Auth-Token` header, as is the case in the template app).
 
 ### Create a 'thing'
-All create/update/delete operations require a valid JSON Web Token, and in the case of creating a 'thing' the only required attribute is a `description` (which must be less than 140 chars... whatever). To do so via curl for example, `curl -H 'Content-Type: application/json' -H "X-Auth-Token: $JWT" -X POST -d '{"description":"Weighted Companion Cube"}' localhost:3000/things`
+All create/update/delete operations require a valid JSON Web Token, and in the case of creating a 'thing' the only required attribute is a `description` (which must be less than 140 restricted chars... see `lib/validate.js` for details). To do so via curl for example, `curl -H 'Content-Type: application/json' -H "X-Auth-Token: $JWT" -X POST -d '{"description":"Weighted Companion Cube"}' localhost:3000/things`
 
 ### Tests
 
