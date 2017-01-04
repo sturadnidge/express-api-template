@@ -19,7 +19,7 @@ module.exports = {
       owner: user.id,
       enabled: true,
       updatedAt: timestamp,
-      secret: "the cake is a lie"
+      secret: "the cake is a lie."
     };
 
     db.insert('things', thing, callback);

@@ -12,7 +12,8 @@
     "url": "git://github.com/sturadnidge/express-api-template.git"
   },
   "scripts": {
-    "start": "node app"
+    "start": "node app",
+    "test": "./node_modules/.bin/mocha --timeout 10000"
   },
   "dependencies": {
     "body-parser": "^1",
@@ -24,8 +25,8 @@
     "validator": "^6"
   },
   "devDependencies": {
-    "chai": "*",
-    "mocha": "*",
-    "supertest": "*"
+    "chai": "^3",
+    "chai-http": "^3",
+    "mocha": "^3"
   }
 }
