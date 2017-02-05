@@ -6,7 +6,7 @@ Implements a single route `/things`, using a mount-style architecture for easy e
 
 ### Usage
 
-In this template app, a JSON Web Token with at least the following in the payload is expected:
+To do anything moderately useful with this template app, an `X-Auth-Token` HTTP header with a JSON Web Token should be sent with each request. A decoded JWT Claims Set should look something like:
 
 ```json
 {
@@ -44,7 +44,7 @@ var options = {
   expiresIn: '7d'
 };
 
-var secret = process.env.JWT_SECRET || 'sshhh - it\'s a secret!'
+var secret = process.env.JWT_SECRET || 'sshhh - it\'s a secret!';
 
 var data = {
   id: argv.i,
