@@ -2,8 +2,7 @@
 /* jshint node: true, latedef: nofunc */
 
 var crypto = require('crypto'),
-    // internal
-    db   = require('./db.js');
+    db     = require('./db.js');
 
 module.exports = {
 
@@ -22,25 +21,25 @@ module.exports = {
       secret: "the cake is a lie."
     };
 
-    db.insert('things', thing, callback);
+    callback(null, db.insert(thing));
 
   },
 
   deleteThing: function(thing, callback) {
 
-    db.remove('things', thing, callback);
+    callback(null, db.remove(thing));
 
   },
 
   findThings: function(callback) {
 
-    db.find('things', callback);
+    callback(null, db.find('things'));
 
   },
 
   findThingById: function(id, callback) {
 
-    db.findOne('things', {id: id}, callback);
+    callback(null, db.findOne({id: id}));
 
   },
 
@@ -48,7 +47,7 @@ module.exports = {
 
     thing.updatedAt = Date.now(); 
     
-    db.update('things', thing, callback);
+    callback(null, db.update(thing));
 
   }
 

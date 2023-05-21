@@ -1,62 +1,51 @@
 'use strict';
 /* jshint node: true, latedef: nofunc */
 
-var _   = require('lodash'),
-    low = require('lowdb');
+var _ = require('lodash');
 
-var db = low();
+var db = { things: [] };
 
-// init
-db.defaults({ things: []}).value();
+var lodb = _.chain(db.things);
 
 module.exports = {
 
-  find: function(collection, callback) {
+  find: function() {
 
-    var data = db.get(collection).filter({enabled: true}).value();
-
-    callback(null, data);
-  },
-
-  findOne: function(collection, query, callback) {
-
-    var data = cloneFindOne(collection, query);
-
-    callback(null, data);
+    return lodb.filter({enabled: true}).value();
 
   },
 
-  insert: function(collection, thing, callback) {
+  findOne: function(query) {
 
-    db.get(collection).push(thing).value();
-
-    var data = cloneFindOne(collection, {id: thing.id});
-
-    callback(null, data);
+    return cloneFindOne(query);
 
   },
 
-  remove: function(collection, thing, callback) {
+  insert: function(thing) {
 
-    db.get(collection).remove(thing).value();
+    db.things.push(thing);
 
-    callback(null);
+    return cloneFindOne({id: thing.id});
 
   },
 
-  update: function(collection, thing, callback) {
+  remove: function(thing) {
 
-    db.get(collection).find({id: thing.id}).assign(thing).value();
+    lodb.remove(thing).value();
 
-    var data = cloneFindOne(collection, {id: thing.id});
+  },
 
-    callback(null, data);
+  update: function(thing) {
+
+    lodb.find({id: thing.id}).assign(thing).value();
+
+    return cloneFindOne({id: thing.id});
 
   }
 };
 
 // private
 
-function cloneFindOne(collection, query) {
-  return db.get(collection).find(query).cloneDeep().value();
+function cloneFindOne(query) {
+  return lodb.find(query).cloneDeep().value();
 }

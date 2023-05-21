@@ -1,6 +1,6 @@
 {
   "name": "express-api-template",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "Stu Radnidge <sturadnidge@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -19,8 +19,7 @@
     "body-parser": "^1",
     "express": "^4",
     "jsonwebtoken": "^7",
-    "lodash": "^4",
-    "lowdb": "0.13"
+    "lodash": "^4"
   },
   "devDependencies": {
     "chai": "^3",
