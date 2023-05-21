@@ -10,7 +10,7 @@ module.exports = {
   createThing: function(user, description, callback) {
 
     var timestamp = Date.now();
-
+    
     var thing = {
       id: crypto.randomUUID(),
       description: description,
@@ -46,6 +46,8 @@ module.exports = {
 
   updateThing: function(thing, callback) {
 
+    thing.updatedAt = Date.now(); 
+    
     db.update('things', thing, callback);
 
   }

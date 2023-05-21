@@ -171,27 +171,26 @@ module.exports = {
 
         // only allow admins and thing owner to update thing
         if (lib.hasRole(req.user, 'admin') || lib.isOwner(req.user, thing)) {
+
           // users can only update thing description
-          if (!lib.validate.thing.description(updatedThing)) {
-            data.message = 'invalid update (description)';
-            return res.status(400).json(data);
-          } else {
-            thing.description = updatedThing.description;
+          if (updatedThing.description) {
+            if (lib.validate.thing.description(updatedThing)) {
+              thing.description = updatedThing.description;
+            } else {
+              data.message = 'invalid update (description)';
+              return res.status(400).json(data);
+            }
+
           }
+
           // admins can change ownership and enable / disable things
           if (lib.hasRole(req.user, 'admin')) {
-
-            if (!lib.validate.thing.enabled(updatedThing)) {
-              data.message = 'invalid thing update (enabled)';
-              return res.status(400).json(data);
-            } else {
+            // key has a boolean value
+            if (updatedThing.hasOwnProperty('enabled')) {
               thing.enabled = updatedThing.enabled;
             }
 
-            if (!lib.validate.thing.owner(updatedThing)) {
-              data.message = 'invalid thing update (owner)';
-              return res.status(400).json(data);
-            } else {
+            if (updatedThing.owner) {
               thing.owner = updatedThing.owner;
             }
           }

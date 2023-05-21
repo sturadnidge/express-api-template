@@ -46,8 +46,6 @@ module.exports = {
 
   update: function(collection, thing, callback) {
 
-    thing.uat = Date.now();
-
     db.get(collection).find({id: thing.id}).assign(thing).value();
 
     var data = cloneFindOne(collection, {id: thing.id});
