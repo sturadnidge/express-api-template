@@ -1,6 +1,6 @@
 {
   "name": "express-api-template",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "author": "Stu Radnidge <sturadnidge@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -16,14 +16,13 @@
     "test": "./node_modules/.bin/mocha --timeout 10000"
   },
   "dependencies": {
-    "body-parser": "^1",
-    "express": "^4",
-    "jsonwebtoken": "^7",
+    "express": "~4.18.0",
+    "jsonwebtoken": "^9",
     "lodash": "^4"
   },
   "devDependencies": {
-    "chai": "^3",
-    "chai-http": "^3",
-    "mocha": "^3"
+    "chai": "*",
+    "chai-http": "*",
+    "mocha": "*"
   }
 }
