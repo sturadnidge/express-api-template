@@ -4,10 +4,9 @@
 var app     = require('../app.js'),
     helpers = require('./helpers.js');
 
-var _        = require('lodash'),
-    chai     = require('chai'),
+var chai     = require('chai'),
     chaiHttp = require('chai-http'),
-    uuid     = require('uuid');
+    crypto   = require('crypto');
 
 var should = chai.should();
 
@@ -65,7 +64,7 @@ describe('Things', function() {
   var createdThingId = ''; // this feels horrible, but I can't see another way
 
   beforeEach(function(done) {
-    // blank database
+    // basically a placeholder in this example
     done();
   });
 
@@ -155,8 +154,6 @@ describe('Things', function() {
         description: "Weighted Storage Cube"
       };
 
-      // even though a POST to /things returns a redirect, chai-http (or rather,
-      // superagent) follows them so this all 'just works'
       chai.request(app)
           .post('/things')
           .set(app.get('authHeader'), token)
@@ -343,7 +340,7 @@ describe('Things', function() {
     it('should not return a thing that was never created', function(done) {
 
       chai.request(app)
-          .get('/things/' + uuid())
+          .get('/things/' + crypto.randomUUID())
           .end(function(err, res) {
             res.should.have.status(404);
             res.body.should.be.an('object');
@@ -403,8 +400,6 @@ describe('Things', function() {
         description: "Weighted Storage Cube"
       };
 
-      // even though a POST to /things returns a redirect, chai-http (or rather,
-      // superagent) follows them so this all 'just works'
       chai.request(app)
           .post('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
@@ -428,44 +423,13 @@ describe('Things', function() {
   });
 
   describe('POST /things/:id', function() {
-    it('should not update a thing owner even if authenticated as the thing owner', function(done) {
+    it('should not update other properties of a thing even if authenticated as the thing owner', function(done) {
       var token = helpers.createJwt("111", "user");
       var updatedThing = {
-        owner: "222"
-      };
-
-      // even though a POST to /things returns a redirect, chai-http (or rather,
-      // superagent) follows them so this all 'just works'
-      chai.request(app)
-          .post('/things/' + createdThingId)
-          .set(app.get('authHeader'), token)
-          .send(updatedThing)
-          .end(function(err, res) {
-            res.should.have.status(200);
-            res.body.should.be.an('object');
-            res.body.should.have.property('id');
-            res.body.should.have.property('description');
-            res.body.should.have.property('owner');
-            res.body.owner.should.eql('111');
-            res.body.should.have.property('enabled');
-            res.body.should.have.property('createdBy');
-            res.body.should.have.property('createdAt');
-            res.body.should.have.property('updatedAt');
-            res.body.should.not.have.property('secret');
-            done();
-          });
-    });
-  });
-
-  describe('POST /things/:id', function() {
-    it('should not disable a thing even if authenticated as the thing owner', function(done) {
-      var token = helpers.createJwt("111", "user");
-      var updatedThing = {
+        owner: "222",
         enabled: false
       };
 
-      // even though a POST to /things returns a redirect, chai-http (or rather,
-      // superagent) follows them so this all 'just works'
       chai.request(app)
           .post('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
@@ -495,8 +459,6 @@ describe('Things', function() {
         owner: "222"
       };
 
-      // even though a POST to /things returns a redirect, chai-http (or rather,
-      // superagent) follows them so this all 'just works'
       chai.request(app)
           .post('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
@@ -522,8 +484,6 @@ describe('Things', function() {
     it('should delete a thing if authenticated as the owner', function(done) {
       var token = helpers.createJwt("222", "user");
 
-      // even though a POST to /things returns a redirect, chai-http (or rather,
-      // superagent) follows them so this all 'just works'
       chai.request(app)
           .delete('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
