@@ -1,7 +1,7 @@
 'use strict';
 /* jshint node: true, latedef: nofunc */
 
-var uuid = require('uuid'),
+var crypto = require('crypto'),
     // internal
     db   = require('./db.js');
 
@@ -12,7 +12,7 @@ module.exports = {
     var timestamp = Date.now();
 
     var thing = {
-      id: uuid(),
+      id: crypto.randomUUID(),
       description: description,
       createdAt: timestamp,
       createdBy: user.id,
