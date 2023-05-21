@@ -31,7 +31,7 @@ module.exports = {
 
   remove: function(thing) {
 
-    lodb.pull(thing).value();
+    _.remove(db.things, function(o) { return o.id == thing.id });
 
   },
 

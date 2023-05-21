@@ -28,7 +28,7 @@ module.exports = {
         }
 
         // only allow admins or thing owner to delete
-        if (lib.hasRole(req.user, 'admin') || req.user.id === thing.owner) {
+        if (lib.hasRole(req.user, 'admin') || lib.isOwner(req.user, thing)) {
           localLib.deleteThing(thing, function(err) {
             if (err) {
               data.message = 'error deleting thing';

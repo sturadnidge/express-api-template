@@ -90,7 +90,7 @@ describe('Things', function() {
           .end(function(err, res) {
             res.should.have.status(200);
             res.body.should.be.a('array');
-            res.body.length.should.be.eql(0);
+            res.body.length.should.eql(0);
             done();
           });
     });
@@ -116,7 +116,7 @@ describe('Things', function() {
   });
 
   describe('POST /things', function() {
-    it('should create a thing once authenticated as a user', function(done) {
+    it('should create a thing for authenticated user 111', function(done) {
       var token = helpers.createJwt("111", "user");
       var thing = {
         description: "Weighted Companion Cube"
@@ -137,12 +137,44 @@ describe('Things', function() {
             res.body.should.have.property('owner');
             res.body.owner.should.eql('111');
             res.body.should.have.property('createdBy');
-            res.body.createdBy.should.eql('111');
+            res.body.createdBy.should.eql(res.body.owner);
             res.body.should.have.property('createdAt');
             res.body.should.have.property('updatedAt');
             res.body.createdAt.should.eql(res.body.updatedAt);
             res.body.should.not.have.property('secret');
             createdThingId = res.body.id; // I mean, I _really_ can't think of another way...
+            done();
+          });
+    });
+  });
+
+  describe('POST /things', function() {
+    it('should create a thing for authenticated user 222', function(done) {
+      var token = helpers.createJwt("222", "user");
+      var thing = {
+        description: "Weighted Storage Cube"
+      };
+
+      // even though a POST to /things returns a redirect, chai-http (or rather,
+      // superagent) follows them so this all 'just works'
+      chai.request(app)
+          .post('/things')
+          .set(app.get('authHeader'), token)
+          .send(thing)
+          .end(function(err, res) {
+            res.should.have.status(200);
+            res.body.should.be.an('object');
+            res.body.should.have.property('id');
+            res.body.should.have.property('description');
+            res.body.description.should.eql(thing.description);
+            res.body.should.have.property('owner');
+            res.body.owner.should.eql('222');
+            res.body.should.have.property('createdBy');
+            res.body.createdBy.should.eql(res.body.owner);
+            res.body.should.have.property('createdAt');
+            res.body.should.have.property('updatedAt');
+            res.body.createdAt.should.eql(res.body.updatedAt);
+            res.body.should.not.have.property('secret');
             done();
           });
     });
@@ -196,7 +228,7 @@ describe('Things', function() {
           .end(function(err, res) {
             res.should.have.status(200);
             res.body.should.be.an('array');
-            res.body.length.should.be.eql(1);
+            res.body.length.should.be.eql(2);
             res.body.should.have.deep.property('[0].id');
             res.body.should.have.deep.property('[0].description');
             res.body.should.not.have.deep.property('[0].createdAt');
@@ -486,44 +518,34 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things/:id', function() {
-    it('should disable a thing if authenticated as an admin', function(done) {
-      var token = helpers.createJwt("888", "admin");
-      var updatedThing = {
-        enabled: false
-      };
+  describe('DEL /things/:id', function() {
+    it('should delete a thing if authenticated as the owner', function(done) {
+      var token = helpers.createJwt("222", "user");
 
       // even though a POST to /things returns a redirect, chai-http (or rather,
       // superagent) follows them so this all 'just works'
       chai.request(app)
-          .post('/things/' + createdThingId)
+          .delete('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
-          .send(updatedThing)
+          .send()
           .end(function(err, res) {
             res.should.have.status(200);
             res.body.should.be.an('object');
-            res.body.should.have.property('id');
-            res.body.should.have.property('description');
-            res.body.should.have.property('owner');
-            res.body.should.have.property('enabled');
-            res.body.enabled.should.be.false;
-            res.body.should.have.property('createdBy');
-            res.body.should.have.property('createdAt');
-            res.body.should.have.property('updatedAt');
-            res.body.should.have.property('secret');
+            res.body.should.have.property('message');
+            res.body.message.should.eql('thing deleted');
             done();
           });
     });
   });
 
   describe('GET /things', function() {
-    it('should GET all things, but there are none because the only item is disabled', function(done) {
+    it('should GET all things, and there is only 1 left', function(done) {
       chai.request(app)
           .get('/things')
           .end(function(err, res) {
             res.should.have.status(200);
             res.body.should.be.a('array');
-            res.body.length.should.be.eql(0);
+            res.body.length.should.eql(1);
             done();
           });
     });
