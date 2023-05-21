@@ -9,7 +9,7 @@ var lodb = _.chain(db.things);
 
 module.exports = {
 
-  find: function() {
+  findAll: function() {
 
     return lodb.filter({enabled: true}).value();
 
@@ -31,7 +31,7 @@ module.exports = {
 
   remove: function(thing) {
 
-    lodb.remove(thing).value();
+    lodb.pull(thing).value();
 
   },
 

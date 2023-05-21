@@ -33,7 +33,7 @@ module.exports = {
 
   findThings: function(callback) {
 
-    callback(null, db.find('things'));
+    callback(null, db.findAll('things'));
 
   },
 
