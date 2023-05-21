@@ -318,10 +318,10 @@ describe('Things', function() {
   });
 
   describe('POST /things/:id', function() {
-    it('should update a thing if authenticated as the owner', function(done) {
+    it('should update a thing description if authenticated as the thing owner', function(done) {
       var token = helpers.createJwt("111", "user");
       var updatedThing = {
-        description: "Weighted Companion Cube"
+        description: "Weighted Storage Cube"
       };
 
       // even though a POST to /things returns a redirect, chai-http (or rather,
