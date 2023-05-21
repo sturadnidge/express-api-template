@@ -2,12 +2,11 @@
 /* jshint node: true, latedef: nofunc */
 
 // modules
-var bodyParser = require('body-parser'),
-    express    = require('express'),
-    http       = require('http'),
+var express = require('express'),
+    http    = require('http'),
 // internal requires
-    things      = require('./things'),
-    mw         = require('./lib/middleware.js');
+    things  = require('./things'),
+    mw      = require('./lib/middleware.js');
 
 var app = express();
 
