@@ -93,19 +93,27 @@ module.exports = {
         }
 
         if (req.authenticated) {
+          // authenticated users see a subset of data
           data = _.pick(thing, [
             'createdAt', 'description', 'id', 'owner', 'updatedAt'
           ]);
 
+          // owner sees almost everything
+          if (lib.isOwner(req.user, thing)) {
+            data = _.omit(thing, ['secret']);
+          }
+          
+          // admins see everything
           if (lib.hasRole(req.user, 'admin')) {
-            // admins see everything
             data = thing;
           }
 
         } else {
+          // anonymous users don't see much
           data = _.pick(thing, [
             'createdAt', 'description', 'id'
           ]);
+
         }
 
         res.status(200).json(data);
@@ -162,7 +170,7 @@ module.exports = {
         }
 
         // only allow admins and thing owner to update thing
-        if (lib.hasRole(req.user, 'admin') || req.user.id === thing.owner) {
+        if (lib.hasRole(req.user, 'admin') || lib.isOwner(req.user, thing)) {
           // users can only update thing description
           if (!lib.validate.thing.description(updatedThing)) {
             data.message = 'invalid update (description)';

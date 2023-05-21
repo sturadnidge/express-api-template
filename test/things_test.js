@@ -89,10 +89,11 @@ describe('Things', function() {
             res.body.description.should.eql(thing.description);
             res.body.should.have.property('owner');
             res.body.owner.should.eql('111');
+            res.body.should.have.property('createdBy');
+            res.body.createdBy.should.eql('111');
             res.body.should.have.property('createdAt');
             res.body.should.have.property('updatedAt');
             res.body.createdAt.should.eql(res.body.updatedAt);
-            res.body.should.not.have.property('createdBy');
             res.body.should.not.have.property('secret');
             createdThingId = res.body.id; // I mean, I _really_ can't think of another way...
             done();
@@ -185,6 +186,24 @@ describe('Things', function() {
     });
   });
 
+  describe('GET /things', function() {
+    it('should GET all the things, each thing should have minimal properties', function(done) {
+
+      chai.request(app)
+          .get('/things')
+          .end(function(err, res) {
+            res.should.have.status(200);
+            res.body.should.be.an('array');
+            res.body.length.should.be.eql(1);
+            res.body.should.have.deep.property('[0].id');
+            res.body.should.have.deep.property('[0].description');
+            res.body.should.not.have.deep.property('[0].createdAt');
+            res.body.should.not.have.deep.property('[0].owner');
+            done();
+          });
+    });
+  });
+
   describe('GET /things/:id', function() {
     it('should return a thing with all properties to an authenticated admin', function(done) {
 
@@ -213,9 +232,34 @@ describe('Things', function() {
   });
 
   describe('GET /things/:id', function() {
-    it('should return a thing with fewer properties to an authenticated user', function(done) {
+    it('should return a thing with most properties to the owner', function(done) {
 
       var token = helpers.createJwt("111", "user");
+
+      chai.request(app)
+          .get('/things/' + createdThingId)
+          .set(app.get('authHeader'), token)
+          .end(function(err, res) {
+            res.should.have.status(200);
+            res.body.should.be.an('object');
+            res.body.should.have.property('id');
+            res.body.id.should.eql(createdThingId);
+            res.body.should.have.property('description');
+            res.body.should.have.property('owner');
+            res.body.should.have.property('createdBy');
+            res.body.should.have.property('createdAt');
+            res.body.should.have.property('updatedAt');
+            res.body.createdAt.should.eql(res.body.updatedAt);
+            res.body.should.not.have.property('secret');
+            done();
+          });
+    });
+  });
+
+  describe('GET /things/:id', function() {
+    it('should return a thing with fewer properties to an authenticated user', function(done) {
+
+      var token = helpers.createJwt("222", "user");
 
       chai.request(app)
           .get('/things/' + createdThingId)
@@ -273,19 +317,32 @@ describe('Things', function() {
     });
   });
 
-  describe('GET /things', function() {
-    it('should GET all the things, each thing should have minimal properties', function(done) {
+  describe('POST /things/:id', function() {
+    it('should update a thing if authenticated as the owner', function(done) {
+      var token = helpers.createJwt("111", "user");
+      var updatedThing = {
+        description: "Weighted Companion Cube"
+      };
 
+      // even though a POST to /things returns a redirect, chai-http (or rather,
+      // superagent) follows them so this all 'just works'
       chai.request(app)
-          .get('/things')
+          .post('/things/' + createdThingId)
+          .set(app.get('authHeader'), token)
+          .send(updatedThing)
           .end(function(err, res) {
             res.should.have.status(200);
-            res.body.should.be.an('array');
-            res.body.length.should.be.eql(1);
-            res.body.should.have.deep.property('[0].id');
-            res.body.should.have.deep.property('[0].description');
-            res.body.should.not.have.deep.property('[0].createdAt');
-            res.body.should.not.have.deep.property('[0].owner');
+            res.body.should.be.an('object');
+            res.body.should.have.property('id');
+            res.body.should.have.property('description');
+            res.body.description.should.eql(updatedThing.description);
+            res.body.should.have.property('owner');
+            res.body.owner.should.eql('111');
+            res.body.should.have.property('createdBy');
+            res.body.should.have.property('createdAt');
+            res.body.should.have.property('updatedAt');
+            res.body.createdAt.should.eql(res.body.updatedAt);
+            res.body.should.not.have.property('secret');
             done();
           });
     });
