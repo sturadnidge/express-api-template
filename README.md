@@ -1,6 +1,6 @@
 # express-api-template
 
-Express 4 based API skeleton, using JWT and backed by a mocked db - clone, cd, npm install and npm start!
+Express 4 based API skeleton, using JWT and backed by a mock db - clone, cd, npm install and npm start!
 
 Implements a single route `/things`, using a mount-style architecture for easy extension if you're into monoliths.
 
@@ -69,14 +69,11 @@ console.log(jot);
 
 ```
 
-### Verify the token
-Ensure the JWT_VERIFY_KEY environment variable is set to the relevant public key.
+Ensure the `JWT_VERIFY_KEY` environment variable is set to the related public key when running the application.
 
 ### Use the token
-If you saved the token value in an environment variable `$JWT`, you could then curl requests into the API with `curl -H "X-Auth-Token: $JWT" ... ` (assuming you have configured the app to look for tokens in the `X-Auth-Token` header, as is the case in the template app).
 
-
-and ensure the correct environment variable is set to verify it as per the `checkToken` function in `lib/middleware.js`.
+If you `cat` the generated JSON Web Token into a `JWT` environment variable, you can then `curl` requests into the API with `curl -H "X-Auth-Token: $JWT" ... ` (assuming you haven't changed the default auth header configuration in the template app).
 
 ### Create a 'thing'
 

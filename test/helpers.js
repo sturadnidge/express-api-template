@@ -28,7 +28,7 @@ module.exports = {
 
     var options = {
       algorithm: 'PS256',
-      expiresIn: '1h'
+      expiresIn: '60s'
     };
 
     var data = {
