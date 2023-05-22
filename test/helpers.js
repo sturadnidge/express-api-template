@@ -1,24 +1,42 @@
 'use strict';
 /* jshint node: true, latedef: nofunc */
-var jwt = require('jsonwebtoken');
+var crypto = require('crypto'),
+    fs     = require('fs'),
+    jwt    = require('jsonwebtoken');
+
+
+// generate test keys
+var keyOpts = { modulusLength: 2048,
+                publicKeyEncoding: {
+                  type: "spki",
+                  format: "pem",
+                },
+                privateKeyEncoding: {
+                  type: "pkcs8",
+                  format: "pem",
+                }
+              };
+
+const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", keyOpts);
+
+process.env.JWT_VERIFY_KEY = publicKey;
+process.env.JWT_SIGNING_KEY = privateKey;
 
 module.exports = {
 
   createJwt: function(userId, roles) {
 
     var options = {
-      algorithm: 'HS256',
+      algorithm: 'PS256',
       expiresIn: '1h'
     };
-
-    var secret = process.env.JWT_SECRET || 'sshhh - it\'s a secret!';
 
     var data = {
       id: userId,
       roles: roles.split(',')
     };
 
-    return jwt.sign(data, secret, options);
+    return jwt.sign(data, process.env.JWT_SIGNING_KEY, options);
   }
 
 };

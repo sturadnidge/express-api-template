@@ -22,14 +22,27 @@ To do anything moderately useful with this template app, an `X-Auth-Token` HTTP 
 
 The template app makes some decisions based on whether the `admin` role is present or not, in both read and write operations. For example, `GET`ing a `thing` will only return all attributes of the thing if you are an `admin`.
 
-### Create a usable JSON Web Token
+### Create a JSON Web Token
 
-All create/update/delete operations require a valid JSON Web Token, The following script will output one. First `npm install jsonwebtoken yargs` and obviously ensure `options.algorithm` and the `secret` used for signing are the same as what is used for verification in the app (as is the case below, compare it to the `checkToken` function in `lib/middleware.js`).
+All create/update/delete operations require a valid JSON Web Token. Whilst it's possible to sign them with symmetric keys, I wouldn't recommend it.
+
+First, create keys to use for signing (private key) and verification (public key). On a *nix based system, run the following:
+
+```shell
+# generate a private key
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out private-key.pem
+
+# extract the corresponding public key
+openssl pkey -in private-key.pem -pubout -out public-key.pem
+```
+
+Then use the following script to output a JWT (first `npm install jsonwebtoken yargs` if you don't have them, and `cat` the private key into a `JWT_SIGNING_KEY` environment variable):
 
 ```javascript
 'use strict';
 
-var jwt = require('jsonwebtoken');
+var fs  = require('fs),
+    jwt = require('jsonwebtoken');
 
 var argv = require('yargs')
   .usage('Usage: $0 -i <id> -r <role>[,<role>,...]')
@@ -38,13 +51,12 @@ var argv = require('yargs')
   .alias('r', 'roles')
   .argv;
 
-// assumes the secret is a string, not a private key
 var options = {
-  algorithm: 'HS256',
+  algorithm: 'PS256',
   expiresIn: '7d'
 };
 
-var secret = process.env.JWT_SECRET || 'sshhh - it\'s a secret!';
+var secret = process.env.JWT_SIGNING_KEY;
 
 var data = {
   id: argv.i,
@@ -57,9 +69,17 @@ console.log(jot);
 
 ```
 
-If you saved that output in an environment variable `$JWT`, you could then curl requests into the API with `curl -H "X-Auth-Token: $JWT" ... ` (assuming you have configured the app to look for tokens in the `X-Auth-Token` header, as is the case in the template app).
+### Verify the token
+Ensure the JWT_VERIFY_KEY environment variable is set to the relevant public key.
+
+### Use the token
+If you saved the token value in an environment variable `$JWT`, you could then curl requests into the API with `curl -H "X-Auth-Token: $JWT" ... ` (assuming you have configured the app to look for tokens in the `X-Auth-Token` header, as is the case in the template app).
+
+
+and ensure the correct environment variable is set to verify it as per the `checkToken` function in `lib/middleware.js`.
 
 ### Create a 'thing'
+
 All create/update/delete operations require a valid JSON Web Token, and in the case of creating a 'thing' the only required attribute is a `description` (which must be less than 140 restricted chars... see `lib/validate.js` for details). To do so via curl for example, `curl -H 'Content-Type: application/json' -H "X-Auth-Token: $JWT" -X POST -d '{"description":"Weighted Companion Cube"}' localhost:3000/things`
 
 ### Tests
