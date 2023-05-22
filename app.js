@@ -2,13 +2,12 @@
 /* jshint node: true, latedef: nofunc */
 
 // modules
-var express = require('express'),
-    http    = require('http'),
-// internal requires
-    things  = require('./things'),
-    mw      = require('./lib/middleware.js');
+const express = require('express'),
+      http    = require('http'),
+      mw      = require('./lib/middleware.js'),
+      things  = require('./things');
 
-var app = express();
+const app = express();
 
 // globals
 app.set('port', process.env.PORT || 3000);
@@ -16,12 +15,7 @@ app.set('authHeader', 'X-Auth-Token');
 app.set('json spaces', 2);
 
 // express variables
-app.enable('trust proxy');
-// custom powered by
-app.use(function(req, res, next) {
-  res.setHeader('X-Powered-By','something something something dark side');
-  next();
-});
+app.enable('trust proxy', 'loopback');
 
 // middleware
 app.use(express.json());
@@ -33,9 +27,8 @@ app.use('/things', things);
 
 // routes
 app.route('/')
-  .get(
-    function (req, res) {
-      var data = {};
+  .get( (req, res) => {
+      let data = {};
 
       req.authenticated ?
         data.message = 'welcome back user ' + req.user.id :
@@ -46,15 +39,15 @@ app.route('/')
 
 // catch all handler
 app.route('*')
-  .all(function(req, res) {
-    var data = {};
+  .all( (req, res) => {
+    let data = {};
 
     data.message = 'nope. nothing. nada. zip. zilch.';
     res.status(404).json(data);
   });
 
 // go go go!
-http.createServer(app).listen(app.get('port'), function(){
+http.createServer(app).listen(app.get('port'), () => {
   console.log('Express server listening on port ' + app.get('port'));
 });
 

@@ -1,27 +1,27 @@
 'use strict';
 /* jshint node: true, latedef: nofunc */
 
-var _ = require('lodash');
+const _ = require('lodash');
 
-var db = { things: [] };
+let db = { things: [] };
 
-var lodb = _.chain(db.things);
+const lodb = _.chain(db.things);
 
 module.exports = {
 
-  findAll: function() {
+  findAll: () => {
 
     return lodb.filter({enabled: true}).value();
 
   },
 
-  findOne: function(query) {
+  findOne: (query) => {
 
     return cloneFindOne(query);
 
   },
 
-  insert: function(thing) {
+  insert: (thing) => {
 
     db.things.push(thing);
 
@@ -29,13 +29,13 @@ module.exports = {
 
   },
 
-  remove: function(thing) {
+  remove: (thing) => {
 
     _.remove(db.things, function(o) { return o.id == thing.id });
 
   },
 
-  update: function(thing) {
+  update: (thing) => {
 
     lodb.find({id: thing.id}).assign(thing).value();
 

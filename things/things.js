@@ -1,22 +1,23 @@
 'use strict';
 /* jshint node: true, latedef: nofunc */
 
-var _        = require('lodash'),
-    localLib = require('./lib.js'),
-    lib      = require('../lib/index.js');
+const _   = require('lodash'),
+      lib = require('./lib.js');
+
+// note that req.params.thing is validated by express before anything gets this far 
 
 module.exports = {
 
   del: {
 
-    thing: function(req, res) {
+    thing: (req, res) => {
     // URI: /things/:thing
     // protected by middleware:
     //   requireAuthentication
       var data = {},
           id   = req.params.thing;
 
-      localLib.findThingById(id, function(err, thing) {
+      lib.findThingById(id, (err, thing) => {
         if (err) {
           data.message = 'error finding thing';
           return res.status(500).json(data);
@@ -29,7 +30,7 @@ module.exports = {
 
         // only allow admins or thing owner to delete
         if (lib.hasRole(req.user, 'admin') || lib.isOwner(req.user, thing)) {
-          localLib.deleteThing(thing, function(err) {
+          lib.deleteThing(thing, (err) => {
             if (err) {
               data.message = 'error deleting thing';
               return res.status(500).json(data);
@@ -52,11 +53,11 @@ module.exports = {
 
     list: {
 
-      all: function(req, res) {
+      all: (req, res) => {
       // URI /things
         var data = {};
 
-        localLib.findThings(function(err, things) {
+        lib.findThings( (err, things) => {
           if (err) {
             data.message = 'error looking up things';
             return res.status(500).json(data);
@@ -75,13 +76,13 @@ module.exports = {
     // end list options
     },
 
-    thing: function(req, res) {
+    thing: (req, res) => {
     // URI /things/:thing
 
       var data = {},
           id = req.params.thing;
 
-      localLib.findThingById(id, function(err, thing) {
+      lib.findThingById(id, (err, thing) => {
         if (err) {
           data.message = 'error finding thing';
           return res.status(500).json(data);
@@ -125,20 +126,20 @@ module.exports = {
 
   post: {
 
-    create: function(req, res) {
+    create: (req, res) => {
     // URI /things
     // protected by middleware:
     //   requireAuthentication
       var data = {},
           thing = req.body;
 
-      if (!lib.validate.thing.description(thing)) {
+      if (!lib.validate.description(thing)) {
         // invalid thing
         data.message = 'invalid thing';
         return res.status(400).json(data);
       }
 
-      localLib.createThing(req.user, thing.description, function(err, thing) {
+      lib.createThing(req.user, thing.description, (err, thing) => {
         if (err || !thing) {
           data.message = 'error creating thing';
           return res.status(500).json(data);
@@ -149,7 +150,7 @@ module.exports = {
       });
     },
 
-    update: function(req, res) {
+    update: (req, res) => {
     // URI /things/:thing
     // protected by middleware:
     //   requireAuthentication
@@ -158,7 +159,7 @@ module.exports = {
           updatedThing = req.body;
 
       // need to check thing owner against requestor id, so need to find the thing first.
-      localLib.findThingById(id, function(err, thing) {
+      lib.findThingById(id, (err, thing) => {
         if (err) {
           data.message = 'error finding thing';
           return res.status(500).json(data);
@@ -174,7 +175,7 @@ module.exports = {
 
           // users can only update thing description
           if (updatedThing.description) {
-            if (lib.validate.thing.description(updatedThing)) {
+            if (lib.validate.description(updatedThing)) {
               thing.description = updatedThing.description;
             } else {
               data.message = 'invalid update (description)';
@@ -195,7 +196,7 @@ module.exports = {
             }
           }
 
-          localLib.updateThing(thing, function(err, thing_) {
+          lib.updateThing(thing, (err, thing_) => {
             if (err || !thing_) {
               data.message = 'error updating thing';
               return res.status(500).json(data);
@@ -216,5 +217,3 @@ module.exports = {
 
 // end exports
 };
-
-// private

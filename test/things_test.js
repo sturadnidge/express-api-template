@@ -1,16 +1,17 @@
 'use strict';
 /* jshint node: true, mocha: true, latedef: nofunc */
 
-var app     = require('../app.js'),
-    helpers = require('./helpers.js');
+const app     = require('../app.js'),
+      helpers = require('./helpers.js');
 
-var chai     = require('chai'),
-    chaiHttp = require('chai-http'),
-    crypto   = require('crypto');
+const chai     = require('chai'),
+      chaiHttp = require('chai-http'),
+      crypto   = require('crypto');
 
-var should = chai.should();
+// never used directly, but required for chaining
+const should = chai.should();
 
-var invalidDescription = "This was a triumph." +
+const invalidDescription = "This was a triumph." +
                          "I'm making a note here: HUGE SUCCESS." +
                          "It's hard to overstate my satisfaction." +
                          "Aperture Science" +
@@ -59,20 +60,20 @@ var invalidDescription = "This was a triumph." +
 
 chai.use(chaiHttp);
 
-describe('Things', function() {
+describe('Things', () => {
 
-  var createdThingId = ''; // this feels horrible, but I can't see another way
+  let createdThingId = ''; // this feels horrible, but I can't see another way
 
-  beforeEach(function(done) {
+  beforeEach( (done) => {
     // basically a placeholder in this example
     done();
   });
 
-  describe('GET /', function() {
-    it('should welcome us', function(done) {
+  describe('GET /', () => {
+    it('should welcome us', (done) => {
       chai.request(app)
           .get('/')
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.a('object');
             res.body.should.have.property('message');
@@ -82,11 +83,11 @@ describe('Things', function() {
     });
   });
 
-  describe('GET /things', function() {
-    it('should GET all things, but there are none', function(done) {
+  describe('GET /things', () => {
+    it('should GET all things, but there are none', (done) => {
       chai.request(app)
           .get('/things')
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.a('array');
             res.body.length.should.eql(0);
@@ -95,16 +96,16 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things', function() {
-    it('should not create a thing without authenticating', function(done) {
-      var thing = {
+  describe('POST /things', () => {
+    it('should not create a thing without authenticating', (done) => {
+      const thing = {
         description: "Weighted Companion Cube"
       };
 
       chai.request(app)
           .post('/things')
           .send(thing)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(401);
             res.body.should.be.an('object');
             res.body.should.have.property('message');
@@ -114,10 +115,10 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things', function() {
-    it('should create a thing for authenticated user 111', function(done) {
-      var token = helpers.createJwt("111", "user");
-      var thing = {
+  describe('POST /things', () => {
+    it('should create a thing for authenticated user 111', (done) => {
+      const token = helpers.createJwt("111", "user");
+      const thing = {
         description: "Weighted Companion Cube"
       };
 
@@ -127,7 +128,7 @@ describe('Things', function() {
           .post('/things')
           .set(app.get('authHeader'), token)
           .send(thing)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object');
             res.body.should.have.property('id');
@@ -147,10 +148,10 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things', function() {
-    it('should create a thing for authenticated user 222', function(done) {
-      var token = helpers.createJwt("222", "user");
-      var thing = {
+  describe('POST /things', () => {
+    it('should create a thing for authenticated user 222', (done) => {
+      const token = helpers.createJwt("222", "user");
+      const thing = {
         description: "Weighted Storage Cube"
       };
 
@@ -158,7 +159,7 @@ describe('Things', function() {
           .post('/things')
           .set(app.get('authHeader'), token)
           .send(thing)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object');
             res.body.should.have.property('id');
@@ -177,10 +178,10 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things', function() {
-    it('should not create a thing with a description longer than 140 characters', function(done) {
-      var token = helpers.createJwt("111", "user");
-      var thing = {
+  describe('POST /things', () => {
+    it('should not create a thing with a description longer than 140 characters', (done) => {
+      const token = helpers.createJwt("111", "user");
+      const thing = {
         description: invalidDescription
       };
 
@@ -188,7 +189,7 @@ describe('Things', function() {
           .post('/things')
           .set(app.get('authHeader'), token)
           .send(thing)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(400);
             res.body.should.be.an('object');
             res.body.should.have.property('message');
@@ -198,16 +199,16 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things', function() {
-    it('should not create a thing without a description property', function(done) {
-      var token = helpers.createJwt("111", "user");
-      var thing = {};
+  describe('POST /things', () => {
+    it('should not create a thing without a description property', (done) => {
+      const token = helpers.createJwt("111", "user");
+      const thing = {};
 
       chai.request(app)
           .post('/things')
           .set(app.get('authHeader'), token)
           .send(thing)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(400);
             res.body.should.be.an('object');
             res.body.should.have.property('message');
@@ -217,12 +218,12 @@ describe('Things', function() {
     });
   });
 
-  describe('GET /things', function() {
-    it('should GET all the things, each thing should have minimal properties', function(done) {
+  describe('GET /things', () => {
+    it('should GET all the things, each thing should have minimal properties', (done) => {
 
       chai.request(app)
           .get('/things')
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('array');
             res.body.length.should.be.eql(2);
@@ -235,15 +236,15 @@ describe('Things', function() {
     });
   });
 
-  describe('GET /things/:id', function() {
-    it('should return a thing with all properties to an authenticated admin', function(done) {
+  describe('GET /things/:id', () => {
+    it('should return a thing with all properties to an authenticated admin', (done) => {
 
-      var token = helpers.createJwt("888", "admin");
+      const token = helpers.createJwt("888", "admin");
 
       chai.request(app)
           .get('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object');
             res.body.should.have.property('id');
@@ -262,15 +263,15 @@ describe('Things', function() {
     });
   });
 
-  describe('GET /things/:id', function() {
-    it('should return a thing with most properties to the owner', function(done) {
+  describe('GET /things/:id', () => {
+    it('should return a thing with most properties to the owner', (done) => {
 
-      var token = helpers.createJwt("111", "user");
+      const token = helpers.createJwt("111", "user");
 
       chai.request(app)
           .get('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object');
             res.body.should.have.property('id');
@@ -288,15 +289,15 @@ describe('Things', function() {
     });
   });
 
-  describe('GET /things/:id', function() {
-    it('should return a thing with fewer properties to an authenticated user', function(done) {
+  describe('GET /things/:id', () => {
+    it('should return a thing with fewer properties to an authenticated user', (done) => {
 
-      var token = helpers.createJwt("222", "user");
+      const token = helpers.createJwt("222", "user");
 
       chai.request(app)
           .get('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object');
             res.body.should.have.property('id');
@@ -314,12 +315,12 @@ describe('Things', function() {
     });
   });
 
-  describe('GET /things/:id', function() {
-    it('should return a thing with hardly any properties to an anonymous user', function(done) {
+  describe('GET /things/:id', () => {
+    it('should return a thing with hardly any properties to an anonymous user', (done) => {
 
       chai.request(app)
           .get('/things/' + createdThingId)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object');
             res.body.should.have.property('id');
@@ -336,12 +337,12 @@ describe('Things', function() {
     });
   });
 
-  describe('GET /things/:id', function() {
-    it('should not return a thing that was never created', function(done) {
+  describe('GET /things/:id', () => {
+    it('should not return a thing that was never created', (done) => {
 
       chai.request(app)
           .get('/things/' + crypto.randomUUID())
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(404);
             res.body.should.be.an('object');
             res.body.should.have.property('message');
@@ -351,10 +352,10 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things/:id', function() {
-    it('should not update a thing if not authenticated as the thing owner', function(done) {
-      var token = helpers.createJwt("222", "user");
-      var updatedThing = {
+  describe('POST /things/:id', () => {
+    it('should not update a thing if not authenticated as the thing owner', (done) => {
+      const token = helpers.createJwt("222", "user");
+      const updatedThing = {
         description: "Weighted Storage Cube"
       };
 
@@ -362,7 +363,7 @@ describe('Things', function() {
           .post('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
           .send(updatedThing)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(403);
             res.body.should.be.an('object');
             res.body.should.have.property('message');
@@ -372,10 +373,10 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things/:id', function() {
-    it('should not update a thing with an invalid description if authenticated as the thing owner', function(done) {
-      var token = helpers.createJwt("111", "user");
-      var updatedThing = {
+  describe('POST /things/:id', () => {
+    it('should not update a thing with an invalid description if authenticated as the thing owner', (done) => {
+      const token = helpers.createJwt("111", "user");
+      const updatedThing = {
         description: invalidDescription
       };
 
@@ -383,7 +384,7 @@ describe('Things', function() {
           .post('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
           .send(updatedThing)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(400);
             res.body.should.be.an('object');
             res.body.should.have.property('message');
@@ -393,10 +394,10 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things/:id', function() {
-    it('should update a thing description if authenticated as the thing owner', function(done) {
-      var token = helpers.createJwt("111", "user");
-      var updatedThing = {
+  describe('POST /things/:id', () => {
+    it('should update a thing description if authenticated as the thing owner', (done) => {
+      const token = helpers.createJwt("111", "user");
+      const updatedThing = {
         description: "Weighted Storage Cube"
       };
 
@@ -404,7 +405,7 @@ describe('Things', function() {
           .post('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
           .send(updatedThing)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object');
             res.body.should.have.property('id');
@@ -422,10 +423,10 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things/:id', function() {
-    it('should not update other properties of a thing even if authenticated as the thing owner', function(done) {
-      var token = helpers.createJwt("111", "user");
-      var updatedThing = {
+  describe('POST /things/:id', () => {
+    it('should not update other properties of a thing even if authenticated as the thing owner', (done) => {
+      const token = helpers.createJwt("111", "user");
+      const updatedThing = {
         owner: "222",
         enabled: false
       };
@@ -434,7 +435,7 @@ describe('Things', function() {
           .post('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
           .send(updatedThing)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object');
             res.body.should.have.property('id');
@@ -452,10 +453,10 @@ describe('Things', function() {
     });
   });
 
-  describe('POST /things/:id', function() {
-    it('should update a thing owner if authenticated as an admin', function(done) {
-      var token = helpers.createJwt("888", "admin");
-      var updatedThing = {
+  describe('POST /things/:id', () => {
+    it('should update a thing owner if authenticated as an admin', (done) => {
+      const token = helpers.createJwt("888", "admin");
+      const updatedThing = {
         owner: "222"
       };
 
@@ -463,7 +464,7 @@ describe('Things', function() {
           .post('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
           .send(updatedThing)
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object');
             res.body.should.have.property('id');
@@ -480,15 +481,15 @@ describe('Things', function() {
     });
   });
 
-  describe('DEL /things/:id', function() {
-    it('should delete a thing if authenticated as the owner', function(done) {
-      var token = helpers.createJwt("222", "user");
+  describe('DEL /things/:id', () => {
+    it('should delete a thing if authenticated as the owner', (done) => {
+      const token = helpers.createJwt("222", "user");
 
       chai.request(app)
           .delete('/things/' + createdThingId)
           .set(app.get('authHeader'), token)
           .send()
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object');
             res.body.should.have.property('message');
@@ -498,11 +499,11 @@ describe('Things', function() {
     });
   });
 
-  describe('GET /things', function() {
-    it('should GET all things, and there is only 1 left', function(done) {
+  describe('GET /things', () => {
+    it('should GET all things, and there is only 1 left', (done) => {
       chai.request(app)
           .get('/things')
-          .end(function(err, res) {
+          .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.a('array');
             res.body.length.should.eql(1);
