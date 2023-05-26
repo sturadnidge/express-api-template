@@ -31,7 +31,7 @@ module.exports = {
 
   remove: (thing) => {
 
-    _.remove(db.things, function(o) { return o.id == thing.id });
+    _.remove(db.things, o => o.id == thing.id);
 
   },
 
