@@ -62,7 +62,7 @@ chai.use(chaiHttp);
 
 describe('Things', () => {
 
-  let createdThingId = ''; // this feels horrible, but I can't see another way
+  let createdThingId    = ''; // this feels horrible, but I can't see another way
 
   beforeEach( (done) => {
     // basically a placeholder in this example
@@ -116,8 +116,8 @@ describe('Things', () => {
   });
 
   describe('POST /things', () => {
-    it('should create a thing for authenticated user 111', (done) => {
-      const token = helpers.createJwt("111", "user");
+    it('should create a thing for authenticated user fe911ee6-44fe-40d6-a59a-74f7ebe44e4e', (done) => {
+      const token = helpers.createJwt("fe911ee6-44fe-40d6-a59a-74f7ebe44e4e", "user");
       const thing = {
         description: "Weighted Companion Cube"
       };
@@ -135,7 +135,7 @@ describe('Things', () => {
             res.body.should.have.property('description');
             res.body.description.should.eql(thing.description);
             res.body.should.have.property('owner');
-            res.body.owner.should.eql('111');
+            res.body.owner.should.eql('fe911ee6-44fe-40d6-a59a-74f7ebe44e4e');
             res.body.should.have.property('createdBy');
             res.body.createdBy.should.eql(res.body.owner);
             res.body.should.have.property('createdAt');
@@ -143,6 +143,38 @@ describe('Things', () => {
             res.body.createdAt.should.eql(res.body.updatedAt);
             res.body.should.not.have.property('secret');
             createdThingId = res.body.id; // I mean, I _really_ can't think of another way...
+            done();
+          });
+    });
+  });
+
+  describe('POST /things', () => {
+    it('should create another thing for authenticated user fe911ee6-44fe-40d6-a59a-74f7ebe44e4e', (done) => {
+      const token = helpers.createJwt("fe911ee6-44fe-40d6-a59a-74f7ebe44e4e", "user");
+      const thing = {
+        description: "Another Weighted Companion Cube"
+      };
+
+      // even though a POST to /things returns a redirect, chai-http (or rather,
+      // superagent) follows them so this all 'just works'
+      chai.request(app)
+          .post('/things')
+          .set(app.get('authHeader'), token)
+          .send(thing)
+          .end( (err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('object');
+            res.body.should.have.property('id');
+            res.body.should.have.property('description');
+            res.body.description.should.eql(thing.description);
+            res.body.should.have.property('owner');
+            res.body.owner.should.eql('fe911ee6-44fe-40d6-a59a-74f7ebe44e4e');
+            res.body.should.have.property('createdBy');
+            res.body.createdBy.should.eql(res.body.owner);
+            res.body.should.have.property('createdAt');
+            res.body.should.have.property('updatedAt');
+            res.body.createdAt.should.eql(res.body.updatedAt);
+            res.body.should.not.have.property('secret');
             done();
           });
     });
@@ -226,11 +258,29 @@ describe('Things', () => {
           .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('array');
-            res.body.length.should.be.eql(2);
+            res.body.length.should.be.eql(3);
             res.body.should.have.deep.property('[0].id');
             res.body.should.have.deep.property('[0].description');
             res.body.should.not.have.deep.property('[0].createdAt');
             res.body.should.not.have.deep.property('[0].owner');
+            done();
+          });
+    });
+  });
+
+  describe('GET /things?owner=fe911ee6-44fe-40d6-a59a-74f7ebe44e4e', () => {
+    it('should GET all the things owned by fe911ee6-44fe-40d6-a59a-74f7ebe44e4e, each thing should have minimal properties', (done) => {
+
+      chai.request(app)
+          .get('/things?owner=fe911ee6-44fe-40d6-a59a-74f7ebe44e4e')
+          .end( (err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('array');
+            res.body.length.should.be.eql(2);
+            res.body.should.have.deep.property('[0].id');
+            res.body.should.have.deep.property('[0].owner');
+            res.body.should.have.deep.property('[0].description');
+            res.body.should.not.have.deep.property('[0].createdAt');
             done();
           });
     });
@@ -266,7 +316,7 @@ describe('Things', () => {
   describe('GET /things/:id', () => {
     it('should return a thing with most properties to the owner', (done) => {
 
-      const token = helpers.createJwt("111", "user");
+      const token = helpers.createJwt("fe911ee6-44fe-40d6-a59a-74f7ebe44e4e", "user");
 
       chai.request(app)
           .get('/things/' + createdThingId)
@@ -375,7 +425,7 @@ describe('Things', () => {
 
   describe('POST /things/:id', () => {
     it('should not update a thing with an invalid description if authenticated as the thing owner', (done) => {
-      const token = helpers.createJwt("111", "user");
+      const token = helpers.createJwt("fe911ee6-44fe-40d6-a59a-74f7ebe44e4e", "user");
       const updatedThing = {
         description: invalidDescription
       };
@@ -396,7 +446,7 @@ describe('Things', () => {
 
   describe('POST /things/:id', () => {
     it('should update a thing description if authenticated as the thing owner', (done) => {
-      const token = helpers.createJwt("111", "user");
+      const token = helpers.createJwt("fe911ee6-44fe-40d6-a59a-74f7ebe44e4e", "user");
       const updatedThing = {
         description: "Weighted Storage Cube"
       };
@@ -425,7 +475,7 @@ describe('Things', () => {
 
   describe('POST /things/:id', () => {
     it('should not update other properties of a thing even if authenticated as the thing owner', (done) => {
-      const token = helpers.createJwt("111", "user");
+      const token = helpers.createJwt("fe911ee6-44fe-40d6-a59a-74f7ebe44e4e", "user");
       const updatedThing = {
         owner: "222",
         enabled: false
@@ -441,7 +491,7 @@ describe('Things', () => {
             res.body.should.have.property('id');
             res.body.should.have.property('description');
             res.body.should.have.property('owner');
-            res.body.owner.should.eql('111');
+            res.body.owner.should.eql('fe911ee6-44fe-40d6-a59a-74f7ebe44e4e');
             res.body.should.have.property('enabled');
             res.body.enabled.should.be.true;
             res.body.should.have.property('createdBy');
@@ -500,13 +550,13 @@ describe('Things', () => {
   });
 
   describe('GET /things', () => {
-    it('should GET all things, and there is only 1 left', (done) => {
+    it('should GET all things, and there are 2 left', (done) => {
       chai.request(app)
           .get('/things')
           .end( (err, res) => {
             res.should.have.status(200);
             res.body.should.be.a('array');
-            res.body.length.should.eql(1);
+            res.body.length.should.eql(2);
             done();
           });
     });

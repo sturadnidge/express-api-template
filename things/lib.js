@@ -73,6 +73,12 @@ module.exports = {
 
   },
 
+  findThingsByOwner: (owner, callback) => {
+
+    callback(null, db.findByOwner(owner));
+
+  },
+
   findThingById: (id, callback) => {
 
     callback(null, db.findOne({id: id}));

@@ -51,30 +51,47 @@ module.exports = {
 
   get: {
 
-    list: {
-
-      all: (req, res) => {
-      // URI /things
+    list: (req, res) => {
+      // URI /things or /things?owner=XXX
         var data = {};
 
-        lib.findThings( (err, things) => {
-          if (err) {
-            data.message = 'error looking up things';
-            return res.status(500).json(data);
-          }
+        if (req.query.owner) {
+          if (lib.validate.uuid(req.query.owner)) {
+            lib.findThingsByOwner(req.query.owner, (err, things) => {
+              if (err) {
+                data.message = 'error looking up things';
+                return res.status(500).json(data);
+              }
 
-          if (things) {
-            data = _.map(things, _.partialRight(_.pick, ['id', 'description']));
+              if (things) {
+                data = _.map(things, _.partialRight(_.pick, ['id', 'owner', 'description']));
+              } else {
+                data = [];
+              }
+            });
           } else {
-            data = [];
+            data.message = 'invalid owner';
+            return res.status(400).json(data);
           }
+        } else {
+          lib.findThings( (err, things) => {
+            if (err) {
+              data.message = 'error looking up things';
+              return res.status(500).json(data);
+            }
+  
+            if (things) {
+              data = _.map(things, _.partialRight(_.pick, ['id', 'description']));
+            } else {
+              data = [];
+            }
+          });
+        }
 
-          res.status(200).json(data);
-        });
-      }
+        res.status(200).json(data);
+    },
 
     // end list options
-    },
 
     thing: (req, res) => {
     // URI /things/:thing

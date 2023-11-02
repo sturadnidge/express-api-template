@@ -15,6 +15,12 @@ module.exports = {
 
   },
 
+  findByOwner: (owner) => {
+
+    return lodb.filter({owner: owner}).value();
+
+  },
+
   findOne: (query) => {
 
     return cloneFindOne(query);

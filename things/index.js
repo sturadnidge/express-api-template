@@ -20,7 +20,7 @@ app.param('thing', (req, res, next) => {
 // routes
 
 app.route('/')
-  .get(things.get.list.all)
+  .get(things.get.list)
   .post(
     mw.requireAuthentication,
     things.post.create
