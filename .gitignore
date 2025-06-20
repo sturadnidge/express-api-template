@@ -21,3 +21,8 @@ node_modules
 # detritus
 package-lock.json
 *.swp
+
+# AI
+.claude
+CLAUDE.md
+mcp.json
