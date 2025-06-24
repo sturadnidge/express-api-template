@@ -1,6 +1,7 @@
 {
   "name": "express-api-template",
   "version": "2.2.0",
+  "type": "module",
   "author": "Stu Radnidge <sturadnidge@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -12,17 +13,19 @@
     "url": "git://github.com/sturadnidge/express-api-template.git"
   },
   "scripts": {
-    "start": "node app",
-    "test": "./node_modules/.bin/mocha --timeout 10000"
+    "start": "node app.js",
+    "test": "./node_modules/.bin/mocha --timeout 10000 --exit",
+    "lint": "./node_modules/.bin/eslint ."
   },
   "dependencies": {
-    "express": "~4.18.0",
+    "express": "~5.0.0",
     "jsonwebtoken": "^9",
     "lodash": "^4"
   },
   "devDependencies": {
-    "chai": "*",
-    "chai-http": "*",
+    "chai": "^4.5.0",
+    "chai-http": "^4.4.0",
+    "eslint": "^8.57.0",
     "mocha": "*"
   }
 }

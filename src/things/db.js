@@ -1,57 +1,45 @@
-'use strict';
-/* jshint node: true, latedef: nofunc */
+import _ from 'lodash';
 
-const _ = require('lodash');
-
-let db = { things: [] };
+const db = { things: [] };
 
 const lodb = _.chain(db.things);
 
-module.exports = {
+const findAll = () => {
+  return lodb.filter({ enabled: true }).value();
+};
 
-  findAll: () => {
+const findByOwner = (owner) => {
+  return lodb.filter({ owner }).value();
+};
 
-    return lodb.filter({enabled: true}).value();
+const findOne = (query) => {
+  return cloneFindOne(query);
+};
 
-  },
+const insert = (thing) => {
+  db.things.push(thing);
+  return cloneFindOne({ id: thing.id });
+};
 
-  findByOwner: (owner) => {
+const remove = (thing) => {
+  _.remove(db.things, (o) => o.id === thing.id);
+};
 
-    return lodb.filter({owner: owner}).value();
-
-  },
-
-  findOne: (query) => {
-
-    return cloneFindOne(query);
-
-  },
-
-  insert: (thing) => {
-
-    db.things.push(thing);
-
-    return cloneFindOne({id: thing.id});
-
-  },
-
-  remove: (thing) => {
-
-    _.remove(db.things, o => o.id == thing.id);
-
-  },
-
-  update: (thing) => {
-
-    lodb.find({id: thing.id}).assign(thing).value();
-
-    return cloneFindOne({id: thing.id});
-
-  }
+const update = (thing) => {
+  lodb.find({ id: thing.id }).assign(thing).value();
+  return cloneFindOne({ id: thing.id });
 };
 
 // private
-
 function cloneFindOne(query) {
   return lodb.find(query).cloneDeep().value();
 }
+
+export default {
+  findAll,
+  findByOwner,
+  findOne,
+  insert,
+  remove,
+  update
+};

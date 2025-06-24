@@ -1,11 +1,7 @@
-'use strict';
-/* jshint node: true, latedef: nofunc */
-
-// modules
-const express = require('express'),
-      http    = require('http'),
-      mw      = require('./lib/middleware.js'),
-      things  = require('./things');
+import express from 'express';
+import { createServer } from 'http';
+import mw from './lib/middleware.js';
+import things from './things/index.js';
 
 const app = express();
 
@@ -27,28 +23,30 @@ app.use('/things', things);
 
 // routes
 app.route('/')
-  .get( (req, res) => {
-      let data = {};
+  .get((req, res) => {
+    const data = {};
 
-      req.authenticated ?
-        data.message = 'welcome back user ' + req.user.id :
-        data.message = 'welcome anonymous user';
+    if (req.authenticated) {
+      data.message = `welcome back user ${req.user.id}`;
+    } else {
+      data.message = 'welcome anonymous user';
+    }
 
-      res.status(200).json(data);
+    res.status(200).json(data);
   });
 
 // catch all handler
-app.route('*')
-  .all( (req, res) => {
-    let data = {};
+app.route('/*splat')
+  .all((req, res) => {
+    const data = {};
 
     data.message = 'nope. nothing. nada. zip. zilch.';
     res.status(404).json(data);
   });
 
 // go go go!
-http.createServer(app).listen(app.get('port'), () => {
-  console.log('Express server listening on port ' + app.get('port'));
+createServer(app).listen(app.get('port'), () => {
+  console.log(`Express server listening on port ${app.get('port')}`);
 });
 
-module.exports = app; // for testing
+export default app; // for testing

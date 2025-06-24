@@ -1,48 +1,43 @@
-'use strict';
-/* jshint node: true, latedef: nofunc */
+import jwt from 'jsonwebtoken';
+import { promisify } from 'util';
 
-const _   = require('lodash'),
-      jwt = require('jsonwebtoken');
+const jwtVerify = promisify(jwt.verify);
 
-module.exports = {
+const checkToken = async (req, res, next) => {
+  const data = {};
 
-  checkToken: (req, res, next) => {
-    let data = {};
-
-    if (_.isNil(req.get(req.app.get('authHeader')))) {
-      // no token, flag as unauthenticated
-      req.authenticated = false;
-      next();
-    } else {
-      const token = req.get(req.app.get('authHeader')),
-            options = {
-              algorithms: ['PS256']
-            };
-
-      jwt.verify(token, process.env.JWT_VERIFY_KEY, options, (err, decoded) => {
-
-        if (err) {
-          data.message = 'cannot verify authenication token';
-          res.status(400).json(data);
-        } else {
-          req.authenticated = true;
-          req.user = decoded;
-          next();
-        }
-
-      });
-    }
-
-  },
-
-  requireAuthentication: (req, res, next) => {
-    let data = {};
-
-    data.message = 'only authenticated requests can attempt that';
-    req.authenticated ? next() : res.status(401).json(data);
-
+  const token = req.get(req.app.get('authHeader'));
+  
+  if (!token) {
+    // no token, flag as unauthenticated
+    req.authenticated = false;
+    return next();
   }
 
+  try {
+    const options = {
+      algorithms: ['PS256']
+    };
+
+    const decoded = await jwtVerify(token, process.env.JWT_VERIFY_KEY, options);
+    req.authenticated = true;
+    req.user = decoded;
+    next();
+  } catch (err) {
+    data.message = 'cannot verify authenication token';
+    res.status(400).json(data);
+  }
+};
+
+const requireAuthentication = (req, res, next) => {
+  const data = {};
+
+  data.message = 'only authenticated requests can attempt that';
+  if (req.authenticated) {
+    next();
+  } else {
+    res.status(401).json(data);
+  }
 };
 
 // private
@@ -51,3 +46,8 @@ if (!process.env.JWT_VERIFY_KEY) {
   console.log('JWT_VERIFY_KEY environment variable not set, exiting\n');
   process.exit(1);
 }
+
+export default {
+  checkToken,
+  requireAuthentication
+};

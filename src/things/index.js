@@ -1,20 +1,21 @@
-'use strict';
-/* jshint node: true, latedef: nofunc */
-
-const express = require('express'),
-      lib     = require('./lib.js'),
-      mw      = require('../lib/middleware.js'),
-      things  = require('./things.js');
+import express from 'express';
+import lib from './lib.js';
+import mw from '../lib/middleware.js';
+import things from './things.js';
 
 const app = express.Router();
 
 // params
 app.param('thing', (req, res, next) => {
-  let data = {};
+  const data = {};
 
   data.message = 'invalid thing id';
 
-  lib.validate.uuid(req.params.thing) ? next() : res.status(400).json(data);
+  if (lib.validate.uuid(req.params.thing)) {
+    next();
+  } else {
+    res.status(400).json(data);
+  }
 });
 
 // routes
@@ -37,4 +38,4 @@ app.route('/:thing')
     things.post.update
   );
 
-module.exports = app;
+export default app;
