@@ -30,42 +30,42 @@ First, create keys to use for signing (private key) and verification (public key
 
 ```shell
 # generate a private key
-openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out private-key.pem
+openssl genpkey -algorithm Ed25519 -out private-key.pem
 
 # extract the corresponding public key
 openssl pkey -in private-key.pem -pubout -out public-key.pem
 ```
 
-Then use the following script to output a JWT (first `npm install jsonwebtoken yargs` if you don't have them, and `cat` the private key into a `JWT_SIGNING_KEY` environment variable):
+Then use the following script to output a JWT (first `npm install jsonwebtoken yargs` if you don't have them, and `cat` the private key into a `JWT_SIGNING_KEY` environment variable). Note: This script uses ES modules syntax to match the project configuration:
 
 ```javascript
-'use strict';
+import fs from 'fs';
+import jwt from 'jsonwebtoken';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
-var fs  = require('fs),
-    jwt = require('jsonwebtoken');
-
-var argv = require('yargs')
+const argv = yargs(hideBin(process.argv))
   .usage('Usage: $0 -i <id> -r <role>[,<role>,...]')
-  .demand(['i', 'r'])
+  .demandOption(['i', 'r'])
   .alias('i', 'id')
   .alias('r', 'roles')
   .argv;
 
-var options = {
-  algorithm: 'PS256',
+const options = {
+  algorithm: 'EdDSA',
   expiresIn: '7d'
 };
 
-var secret = process.env.JWT_SIGNING_KEY;
+const secret = process.env.JWT_SIGNING_KEY;
 
-var data = {
+const data = {
   id: argv.i,
   roles: argv.r.split(',')
 };
 
-var jot = jwt.sign(data, secret, options);
+const token = jwt.sign(data, secret, options);
 
-console.log(jot);
+console.log(token);
 
 ```
 
