@@ -5,7 +5,7 @@ import chaiHttp from 'chai-http';
 import { randomUUID } from 'crypto';
 
 // never used directly, but required for chaining
-chai.should();
+const should = chai.should(); // eslint-disable-line no-unused-vars
 
 const invalidDescription = 'This was a triumph.' +
                          'I\'m making a note here: HUGE SUCCESS.' +

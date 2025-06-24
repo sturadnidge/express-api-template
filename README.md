@@ -1,6 +1,6 @@
 # express-api-template
 
-Express 4 based API skeleton, using JWT and backed by a mock db - clone, cd, npm install and npm start!
+Express 5 based API skeleton, using JWT and backed by a mock db - clone, cd, npm install and npm start!
 
 Implements a single route `/things`, using a mount-style architecture for easy extension if you're into monoliths.
 
